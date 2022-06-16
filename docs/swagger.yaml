@@ -1,0 +1,210 @@
+definitions:
+  auth.Token:
+    properties:
+      MerchantID:
+        items:
+          type: integer
+        type: array
+      RefreshTokenString:
+        type: string
+      TokenString:
+        type: string
+      UserID:
+        type: integer
+    type: object
+  lib.OutputFormat:
+    properties:
+      Code:
+        type: string
+      Data: {}
+      Errors:
+        items:
+          properties:
+            Error:
+              type: string
+            Field:
+              type: string
+          type: object
+        type: array
+      Message:
+        type: string
+      Success:
+        type: boolean
+    type: object
+  merchants.MerchantOmzet:
+    properties:
+      Date:
+        type: string
+      MerchantName:
+        type: string
+      Omzet:
+        type: number
+    type: object
+  model.Users:
+    properties:
+      Password:
+        type: string
+      UserName:
+        type: string
+    type: object
+  outlet.OutletOmzet:
+    properties:
+      Date:
+        type: string
+      MerchantName:
+        type: string
+      Omzet:
+        type: number
+      OutletName:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: |-
+    Swagger for backend API service
+    Get the Bearer token on the Authentication Service
+    JSON Link: <a href=/swagger/doc.json>docs.json</a>
+  title: Swagger for Authentication API
+  version: "1.0"
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Login
+        in: body
+        name: Login
+        required: true
+        schema:
+          $ref: '#/definitions/model.Users'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/lib.OutputFormat'
+            - properties:
+                Data:
+                  $ref: '#/definitions/auth.Token'
+              type: object
+      tags:
+      - Auth
+  /merchant/{merchant_id}/omzet:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: '{1}'
+        in: path
+        name: merchant_id
+        required: true
+        type: integer
+      - description: 2022-03
+        in: query
+        name: bulan
+        type: string
+      - description: "20"
+        in: query
+        name: limit
+        type: integer
+      - description: "1"
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/lib.OutputFormat'
+            - properties:
+                Data:
+                  items:
+                    $ref: '#/definitions/merchants.MerchantOmzet'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - Merchant
+  /merchant/{merchant_id}/outlet/{outlet_id}/omzet:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: '{1}'
+        in: path
+        name: merchant_id
+        required: true
+        type: integer
+      - description: '{1}'
+        in: path
+        name: outlet_id
+        required: true
+        type: integer
+      - description: 2022-03
+        in: query
+        name: bulan
+        type: string
+      - description: "20"
+        in: query
+        name: limit
+        type: integer
+      - description: "1"
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/lib.OutputFormat'
+            - properties:
+                Data:
+                  items:
+                    $ref: '#/definitions/outlet.OutletOmzet'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - Outlet
+  /register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Register
+        in: body
+        name: Register
+        required: true
+        schema:
+          $ref: '#/definitions/model.Users'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/lib.OutputFormat'
+            - properties:
+                Data:
+                  $ref: '#/definitions/auth.Token'
+              type: object
+      tags:
+      - Auth
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
